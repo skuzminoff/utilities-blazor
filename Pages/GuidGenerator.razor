@@ -1,0 +1,17 @@
+@page "/guidgenerator"
+
+<h3>Guid Generator</h3>
+
+<p>@guid</p>
+<button class="btn btn-primary" @onclick="Generate">Generate</button>
+
+@code {
+
+    private string guid;
+
+    private void Generate()
+    {
+        guid = Guid.NewGuid().ToString();
+    }
+
+}

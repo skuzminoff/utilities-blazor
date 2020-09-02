@@ -1,0 +1,91 @@
+@page "/retrycalculator"
+@using System.ComponentModel.DataAnnotations
+<h3>Exponential Retry Calculator</h3>
+
+<EditForm Model="@_retryCalculatorModel" OnValidSubmit="@Calculate">
+    <DataAnnotationsValidator/>
+    <ValidationSummary/>
+
+    <div class="form-group">
+        <label for="retryLimit">Retry limit</label>
+        <InputNumber class="form-control" id="retryLimit" placeholder="Retry limit" @bind-Value="_retryCalculatorModel.RetryLimit"/>
+    </div>
+    <div class="form-group">
+        <label for="minInterval">Min interval</label>
+        <InputNumber class="form-control" id="minInterval" placeholder="Min interval" @bind-Value="_retryCalculatorModel.MinInterval"/>
+    </div>
+
+    <div class="form-group">
+        <label for="maxInterval">Max interval</label>
+        <InputNumber class="form-control" id="maxInterval" placeholder="Max interval" @bind-Value="_retryCalculatorModel.MaxInterval"/>
+    </div>
+
+    <div class="form-group">
+        <label for="delta">Delta</label>
+        <InputNumber class="form-control" id="delta" placeholder="Delta" @bind-Value="_retryCalculatorModel.Delta"/>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+</EditForm>
+
+@if (_periods.Any())
+{
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">Trigger time</th>
+        </tr>
+        </thead>
+        <tbody>
+        @for (var i = 0; i < _periods.Count; i++)
+        {
+            <tr>
+                <th scope="row">@(i+1)</th>
+                <td>@_periods[i]</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+@code {
+
+    public class RetryCalculatorModel
+    {
+        [Required, Range(minimum: 1, maximum: Int32.MaxValue)]
+        public int RetryLimit { get; set; }
+
+        [Required, Range(minimum: 1, maximum: Int32.MaxValue)]
+        public int MaxInterval { get; set; }
+
+        [Required, Range(minimum: 1, maximum: Int32.MaxValue)]
+        public int MinInterval { get; set; }
+
+        [Required, Range(minimum: 1, maximum: Int32.MaxValue)]
+        public int Delta { get; set; }
+    }
+
+    private List<TimeSpan> _periods = new List<TimeSpan>();
+
+    private RetryCalculatorModel _retryCalculatorModel = new RetryCalculatorModel();
+
+    private void Calculate()
+    {
+        _periods.Clear();
+
+        var retryLimit = _retryCalculatorModel.RetryLimit;
+
+        var minInterval = TimeSpan.FromSeconds(_retryCalculatorModel.MinInterval).TotalMilliseconds;
+        var maxInterval = TimeSpan.FromSeconds(_retryCalculatorModel.MaxInterval).TotalMilliseconds;
+        var lowInterval = 0.8 * TimeSpan.FromSeconds(_retryCalculatorModel.MinInterval).TotalMilliseconds;
+        var highInterval = 1.2 * TimeSpan.FromSeconds(_retryCalculatorModel.Delta).TotalMilliseconds;
+
+        Random random = new Random();
+        for (int i = 0; i < retryLimit; ++i)
+        {
+            _periods.Add(TimeSpan.FromMilliseconds((int) Math.Min(minInterval + Math.Pow(2.0, i) * random.Next((int) lowInterval, (int) highInterval), maxInterval)));
+        }
+    }
+
+}
