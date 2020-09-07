@@ -8,24 +8,37 @@
 
     <div class="form-group">
         <label for="retryLimit">Retry limit</label>
-        <InputNumber class="form-control" id="retryLimit" placeholder="Retry limit" @bind-Value="_retryCalculatorModel.RetryLimit"/>
+        <InputNumber class="form-control"
+                     id="retryLimit"
+                     placeholder="Retry limit"
+
+                     ValueExpression="() => _retryCalculatorModel.RetryLimit"
+                     Value="@_retryCalculatorModel.RetryLimit"
+                     ValueChanged="@((int value) => { _retryCalculatorModel.RetryLimit = value; Calculate(); return Task.CompletedTask;})"/>
     </div>
     <div class="form-group">
         <label for="minInterval">Min interval</label>
-        <InputNumber class="form-control" id="minInterval" placeholder="Min interval" @bind-Value="_retryCalculatorModel.MinInterval"/>
+        <InputNumber class="form-control" id="minInterval" placeholder="Min interval"
+                     ValueExpression="() => _retryCalculatorModel.MinInterval"
+                     Value="@_retryCalculatorModel.MinInterval"
+                     ValueChanged="@((int value) => { _retryCalculatorModel.MinInterval = value; Calculate(); return Task.CompletedTask;})"/>
     </div>
 
     <div class="form-group">
         <label for="maxInterval">Max interval</label>
-        <InputNumber class="form-control" id="maxInterval" placeholder="Max interval" @bind-Value="_retryCalculatorModel.MaxInterval"/>
+        <InputNumber class="form-control" id="maxInterval" placeholder="Max interval"
+                     ValueExpression="() => _retryCalculatorModel.MaxInterval"
+                     Value="@_retryCalculatorModel.MaxInterval"
+                     ValueChanged="@((int value) => { _retryCalculatorModel.MaxInterval = value; Calculate(); return Task.CompletedTask;})"/>
     </div>
 
     <div class="form-group">
         <label for="delta">Delta</label>
-        <InputNumber class="form-control" id="delta" placeholder="Delta" @bind-Value="_retryCalculatorModel.Delta"/>
+        <InputNumber class="form-control" id="delta" placeholder="Delta"
+                     ValueExpression="() => _retryCalculatorModel.Delta"
+                     Value="@_retryCalculatorModel.Delta"
+                     ValueChanged="@((int value) => { _retryCalculatorModel.Delta = value; Calculate(); return Task.CompletedTask;})"/>
     </div>
-
-    <button type="submit" class="btn btn-primary">Submit</button>
 </EditForm>
 
 @if (_periods.Any())
@@ -41,7 +54,7 @@
         @for (var i = 0; i < _periods.Count; i++)
         {
             <tr>
-                <th scope="row">@(i+1)</th>
+                <th scope="row">@(i + 1)</th>
                 <td>@_periods[i]</td>
             </tr>
         }
@@ -54,16 +67,16 @@
     public class RetryCalculatorModel
     {
         [Required, Range(minimum: 1, maximum: Int32.MaxValue)]
-        public int RetryLimit { get; set; }
+        public int RetryLimit { get; set; } = 5;
 
         [Required, Range(minimum: 1, maximum: Int32.MaxValue)]
-        public int MaxInterval { get; set; }
+        public int MaxInterval { get; set; } = 900;
 
         [Required, Range(minimum: 1, maximum: Int32.MaxValue)]
-        public int MinInterval { get; set; }
+        public int MinInterval { get; set; } = 30;
 
         [Required, Range(minimum: 1, maximum: Int32.MaxValue)]
-        public int Delta { get; set; }
+        public int Delta { get; set; } = 30;
     }
 
     private List<TimeSpan> _periods = new List<TimeSpan>();
@@ -87,5 +100,4 @@
             _periods.Add(TimeSpan.FromMilliseconds((int) Math.Min(minInterval + Math.Pow(2.0, i) * random.Next((int) lowInterval, (int) highInterval), maxInterval)));
         }
     }
-
 }
