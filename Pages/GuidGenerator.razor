@@ -1,17 +1,30 @@
 @page "/guidgenerator"
+@inject IJSRuntime JSRuntime;
 
 <h3>Guid Generator</h3>
 
-<p>@guid</p>
-<button class="btn btn-primary" @onclick="Generate">Generate</button>
+<div class="input-group mb-3">
+    <div class="input-group-prepend">
+        <button class="btn btn-outline-secondary" type="button" @onclick="Generate">Generate</button>
+    </div>
+    <input type="text" disabled class="form-control" placeholder="" aria-label="" aria-describedby="basic-addon1" value="@guid">
+    <div class="input-group-append">
+        <button class="btn btn-outline-secondary" id="copy-btn" type="button" @onclick="ToClipboard">To clipboard</button>
+    </div>
+</div>
 
 @code {
 
     private string guid;
 
-    private void Generate()
+    private async Task Generate()
     {
         guid = Guid.NewGuid().ToString();
+        await JSRuntime.InvokeVoidAsync("clipboardCopy.resetCopyBtnCaption");
     }
 
+    private async Task ToClipboard()
+    {
+        await JSRuntime.InvokeVoidAsync("clipboardCopy.copyText", guid);
+    }
 }
