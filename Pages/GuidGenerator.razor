@@ -1,5 +1,6 @@
 @page "/guidgenerator"
-@inject IJSRuntime JSRuntime;
+@using TextCopy
+@inject IClipboard Clipboard;
 
 <h3>Guid Generator</h3>
 
@@ -7,24 +8,34 @@
     <div class="input-group-prepend">
         <button class="btn btn-outline-secondary" type="button" @onclick="Generate">Generate</button>
     </div>
-    <input type="text" disabled class="form-control" placeholder="" aria-label="" aria-describedby="basic-addon1" value="@guid">
+    <input type="text" disabled class="form-control" placeholder="" aria-label="" aria-describedby="basic-addon1" value="@_guid">
     <div class="input-group-append">
-        <button class="btn btn-outline-secondary" id="copy-btn" type="button" @onclick="ToClipboard">To clipboard</button>
+        <button class="btn btn-outline-secondary" id="copy-btn" type="button" @onclick="ToClipboard">@_caption</button>
     </div>
 </div>
 
 @code {
-
-    private string guid;
+    private string _guid;
+    private string _caption { get; set; } = "To clipboard";
 
     private async Task Generate()
     {
-        guid = Guid.NewGuid().ToString();
-        await JSRuntime.InvokeVoidAsync("clipboardCopy.resetCopyBtnCaption");
+        _guid = Guid.NewGuid().ToString();
+        _caption = "To сlipboard";
     }
 
     private async Task ToClipboard()
     {
-        await JSRuntime.InvokeVoidAsync("clipboardCopy.copyText", guid);
+        try
+        {
+            await Clipboard.SetTextAsync(_guid);
+            _caption = "Copied!";
+        }
+        catch
+        {
+            _caption = "Not copied!";
+        }
     }
+
+
 }

@@ -19,21 +19,6 @@
         <a class="dismiss">🗙</a>
     </div>
     <script src="_framework/blazor.webassembly.js"></script>
-    <script>
-        window.clipboardCopy = {
-            copyText: function(text) {
-                navigator.clipboard.writeText(text).then(function () {
-                    document.getElementById("copy-btn").innerText="Copied!";
-                })
-                    .catch(function (error) {
-                        document.getElementById("copy-btn").innerText="Not copied";
-                    });
-            },
-            resetCopyBtnCaption: function() {
-                document.getElementById("copy-btn").innerText="To clipboard";
-            }
-        };
-    </script>
 </body>
 
 </html>
