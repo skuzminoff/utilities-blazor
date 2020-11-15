@@ -1,6 +1,8 @@
 @page "/guidgenerator"
 @using TextCopy
+@using Microsoft.Extensions.Logging
 @inject IClipboard Clipboard;
+@inject ILogger<GuidGenerator> Logger;
 
 <h3>Guid Generator</h3>
 
@@ -18,7 +20,7 @@
     private string _guid;
     private string _caption { get; set; } = "To clipboard";
 
-    private async Task Generate()
+    private void Generate()
     {
         _guid = Guid.NewGuid().ToString();
         _caption = "To сlipboard";
@@ -31,11 +33,10 @@
             await Clipboard.SetTextAsync(_guid);
             _caption = "Copied!";
         }
-        catch
+        catch (Exception ex)
         {
+            Logger.LogError("error copying to clipboard", ex);
             _caption = "Not copied!";
         }
     }
-
-
 }
